@@ -1,0 +1,2 @@
+import {NextResponse} from "next/server";import {prisma} from "@/lib/prisma";import {requireOwner} from "@/lib/auth";
+export async function GET(){try{await requireOwner()}catch{return NextResponse.json({error:"Forbidden"},{status:403})}return NextResponse.json(await prisma.paymentRequest.findMany({where:{status:"PENDING"},include:{user:{select:{id:true,email:true}}},orderBy:{submittedAt:"asc"}}))}

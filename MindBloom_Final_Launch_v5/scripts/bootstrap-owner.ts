@@ -1,0 +1,2 @@
+import {PrismaClient} from "@prisma/client";import bcrypt from "bcryptjs";const p=new PrismaClient();
+async function main(){const email=process.env.OWNER_EMAIL,password=process.env.OWNER_PASSWORD;if(!email||!password)throw new Error("Set OWNER_EMAIL and OWNER_PASSWORD");await p.user.upsert({where:{email},update:{role:"OWNER",passwordHash:await bcrypt.hash(password,12)},create:{email,role:"OWNER",name:"Raffy",passwordHash:await bcrypt.hash(password,12)}});console.log("Owner ready")}main().finally(()=>p.$disconnect());
