@@ -1,4 +1,0 @@
-import {NextResponse} from "next/server"; import {z} from "zod"; import {prisma} from "@/lib/prisma"; import {getSession} from "@/lib/auth";
-const schema=z.object({trxId:z.string().trim().min(4).max(100)});
-export async function POST(req:Request){const s=await getSession();if(!s||s.role!=="PARENT")return NextResponse.json({error:"Unauthorized"},{status:401});const p=schema.safeParse(await req.json());if(!p.success)return NextResponse.json({error:"Invalid TRX ID"},{status:400});try{const x=await prisma.paymentRequest.create({data:{userId:s.userId,trxId:p.data.trxId,amountPkr:799,method:"NAYAPAY"}});return NextResponse.json({ok:true,id:x.id})}catch{return NextResponse.json({error:"TRX ID already submitted"},{status:409})}}
-export async function GET(){const s=await getSession();if(!s)return NextResponse.json({error:"Unauthorized"},{status:401});return NextResponse.json(await prisma.paymentRequest.findMany({where:{userId:s.userId},orderBy:{submittedAt:"desc"}}))}
